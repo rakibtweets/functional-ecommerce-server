@@ -9,8 +9,7 @@ app.use(express.json());
 // import all the routes
 
 const products = require('./Routes/products');
-const newProduct = require('./Routes/products');
+
 app.use('/api/v1', products);
-app.use('/api/v1', newProduct);
 
 module.exports = app;
