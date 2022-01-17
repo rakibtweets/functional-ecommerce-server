@@ -47,10 +47,7 @@ exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
   let product = await Product.findById(id);
 
   if (!product) {
-    return res.status(404).json({
-      success: false,
-      message: 'Product Not found',
-    });
+    return next(new ErrorHandler('Product Not Found', 404));
   }
 
   // update
@@ -71,10 +68,7 @@ exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
   const id = req.params.id;
   const product = await Product.findById(id);
   if (!product) {
-    return res.status(404).json({
-      success: false,
-      message: 'Product Not found',
-    });
+    return next(new ErrorHandler('Product Not Found', 404));
   }
 
   // remove product
