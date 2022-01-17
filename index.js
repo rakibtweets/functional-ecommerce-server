@@ -6,6 +6,16 @@ const port = process.env.PORT || 5000;
 //setting up config file
 dotenv.config({ path: 'Config/config.env' });
 
+// handle uncaught excepion
+
+process.on('uncaughtException', (err) => {
+  console.log(`ERROR: ${err.message} \n ${err.stack}`);
+  console.log('Shutting down the server due to uncaught exception');
+  process.exit(1);
+});
+
+console.log(a); // reference error: uncaught error
+
 // connecting to Database
 connectDatabase();
 
