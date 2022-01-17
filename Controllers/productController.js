@@ -14,18 +14,18 @@ exports.newProduct = catchAsyncErrors(async (req, res, next) => {
 });
 
 //get all products => /api/v1/products
-exports.getProducts = async (req, res, next) => {
+exports.getProducts = catchAsyncErrors(async (req, res, next) => {
   const products = await Product.find();
   res.status(200).json({
     success: true,
     count: products.length,
     products,
   });
-};
+});
 
 //get single product => /api/v1/product/:id
 
-exports.getSingleProduct = async (req, res, next) => {
+exports.getSingleProduct = catchAsyncErrors(async (req, res, next) => {
   const id = req.params.id;
   const product = await Product.findById(id);
 
@@ -37,11 +37,11 @@ exports.getSingleProduct = async (req, res, next) => {
     success: true,
     product,
   });
-};
+});
 
 // Update product => /api/v1/admin/product/:id
 
-exports.updateProduct = async (req, res, next) => {
+exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
   const id = req.params.id;
   const productBody = req.body;
   let product = await Product.findById(id);
@@ -63,11 +63,11 @@ exports.updateProduct = async (req, res, next) => {
     success: true,
     product,
   });
-};
+});
 
 // Delete Product=> /api/v1/admin/product/:id
 
-exports.deleteProduct = async (req, res, next) => {
+exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
   const id = req.params.id;
   const product = await Product.findById(id);
   if (!product) {
@@ -84,4 +84,4 @@ exports.deleteProduct = async (req, res, next) => {
     success: false,
     message: 'Product is deleted',
   });
-};
+});
