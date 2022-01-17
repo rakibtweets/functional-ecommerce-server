@@ -1,6 +1,6 @@
 const Product = require('../Modals/productModals');
 
-// create new product => /api/v1/product/new
+// create new product => /api/v1/admin/product/new
 
 exports.newProduct = async (req, res, next) => {
   const product = await Product.create(req.body);
@@ -37,7 +37,7 @@ exports.getSingleProduct = async (req, res, next) => {
   });
 };
 
-// Update product => /api/v1/product/:id
+// Update product => /api/v1/admin/product/:id
 
 exports.updateProduct = async (req, res, next) => {
   const id = req.params.id;
@@ -60,5 +60,26 @@ exports.updateProduct = async (req, res, next) => {
   res.status(200).json({
     success: true,
     product,
+  });
+};
+
+// Delete Product=> /api/v1/admin/product/:id
+
+exports.deleteProduct = async (req, res, next) => {
+  const id = req.params.id;
+  const product = await Product.findById(id);
+  if (!product) {
+    return res.status(404).json({
+      success: false,
+      message: 'Product Not found',
+    });
+  }
+
+  // remove product
+  await product.remove();
+
+  res.status(200).json({
+    success: false,
+    message: 'Product is deleted',
   });
 };
