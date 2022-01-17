@@ -14,7 +14,7 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-console.log(a); // reference error: uncaught error
+// console.log(a); // reference error: uncaught error
 
 // connecting to Database
 connectDatabase();
