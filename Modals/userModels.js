@@ -44,7 +44,6 @@ const userSchema = new moongoose.Schema({
 });
 
 // Encrypting password before saving user
-
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     next();
@@ -52,8 +51,12 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-// Return JWT Token
+// compare user password
+userSchema.methods.comparePassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
+// Return JWT Token
 userSchema.methods.getJwtToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_TIME,
