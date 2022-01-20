@@ -12,8 +12,10 @@ app.use(express.urlencoded({ extended: true }));
 // import all the routes
 
 const products = require('./Routes/products');
+const user = require('./Routes/userAuth');
 
 app.use('/api/v1', products);
+app.use('/api/v1', user);
 
 //middleware to handle errors
 app.use(errorMiddleware);

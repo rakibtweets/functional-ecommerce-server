@@ -1,5 +1,7 @@
 const moongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new moongoose.Schema({
   name: {
@@ -16,10 +18,10 @@ const userSchema = new moongoose.Schema({
   password: {
     type: String,
     required: [true, 'Enter your password'],
-    minLength: [6, 'Your password must be longer than 6 character'],
+    minlength: [6, 'Your password must be longer than 6 character'],
     select: false,
   },
-  avater: {
+  avatar: {
     public_id: {
       type: String,
       required: true,
@@ -40,4 +42,22 @@ const userSchema = new moongoose.Schema({
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 });
+
+// Encrypting password before saving user
+
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    next();
+  }
+  this.password = await bcrypt.hash(this.password, 10);
+});
+
+// Return JWT Token
+
+userSchema.methods.getJwtToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_TIME,
+  });
+};
+
 module.exports = moongoose.model('user', userSchema);
