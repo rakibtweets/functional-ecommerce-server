@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const User = require('../Modals/userModels');
 const ErrrorHandler = require('../Utils/errorHandler');
 const catchAsyncErrors = require('../Middlewares/catchAsyncErrors');
+const sendToken = require('../Utils/JwtToken');
 
 // Register a user => /api/v1/register
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
@@ -17,11 +18,7 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
     },
   });
 
-  const token = user.getJwtToken();
-  res.status(201).json({
-    success: true,
-    token,
-  });
+  sendToken(user, 200, res);
 });
 
 // Login user => /api/v1/login
@@ -47,10 +44,5 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrrorHandler('Invalid Email or Password', 401));
   }
 
-  const token = user.getJwtToken();
-
-  res.status(200).json({
-    success: true,
-    token,
-  });
+  sendToken(user, 200, res);
 });
