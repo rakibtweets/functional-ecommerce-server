@@ -3,6 +3,7 @@ const {
   registerUser,
   loginUser,
   logOutUser,
+  fotgotPassword,
 } = require('../Controllers/userAuthController');
 const router = express.Router();
 
@@ -10,6 +11,8 @@ const router = express.Router();
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
+
+router.post('/password/forgot', fotgotPassword);
 router.get('/logOut', logOutUser);
 
 module.exports = router;
