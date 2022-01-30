@@ -23,9 +23,15 @@ module.exports = (err, req, res, next) => {
       error = new ErrorHandler(message, 400);
     }
 
-    //hanfdle mongoose validation error
+    //handle mongoose validation error
     if (err.name === 'ValidationError') {
       const message = Object.values(err.errors).map((value) => value.message);
+      error = new ErrorHandler(message, 400);
+    }
+
+    // Handling Mongoose duplicate key error
+    if (err.code === 11000) {
+      const message = `Duplicate ${Object.keys(err.keyValue)} entered`;
       error = new ErrorHandler(message, 400);
     }
 

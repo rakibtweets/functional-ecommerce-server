@@ -61,7 +61,6 @@ exports.fotgotPassword = catchAsyncErrors(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   // Create reset password url
-  console.log(`${req.get('host')}`);
   const resetUrl = `${req.protocol}://${req.get(
     'host'
   )}/api/v1/password/reset/${resetToken}`;
