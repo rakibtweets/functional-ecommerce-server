@@ -128,8 +128,42 @@ exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// LogOut User => api/v1/logOut
+// Update/Change password => /api/v1/password/update
+exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select('+password');
 
+  // check old/previous password
+  const isMatched = await user.comparePassword(req.body.oldPassword);
+  if (!isMatched) {
+    return next(new ErrrorHandler('Old password is incorrect', 400));
+  }
+  user.password = req.body.password;
+  await user.save();
+  sendToken(user, 200, res);
+});
+
+// Update user profile => /api/v1/me/update
+exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
+  const newUserData = {
+    name: req.body.name,
+    email: req.body.email,
+  };
+
+  // Update avatat: TODO
+
+  // save update profile to database
+  const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+
+  res.status(200).json({
+    success: true,
+  });
+});
+
+// LogOut User => api/v1/logOut
 exports.logOutUser = catchAsyncErrors(async (req, res, next) => {
   res.cookie('token', null, {
     expires: new Date(Date.now()),
