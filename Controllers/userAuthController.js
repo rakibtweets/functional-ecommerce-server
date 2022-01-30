@@ -4,6 +4,7 @@ const ErrrorHandler = require('../Utils/errorHandler');
 const catchAsyncErrors = require('../Middlewares/catchAsyncErrors');
 const sendToken = require('../Utils/JwtToken');
 const sendEmail = require('../Utils/sendEmail');
+const crypto = require('crypto');
 
 // Register a user => /api/v1/register
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
@@ -49,7 +50,6 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 });
 
 // Fotgot Password => /api/v1/password/forgot
-
 exports.fotgotPassword = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
@@ -61,9 +61,10 @@ exports.fotgotPassword = catchAsyncErrors(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   // Create reset password url
+  console.log(`${req.get('host')}`);
   const resetUrl = `${req.protocol}://${req.get(
     'host'
-  )}/password/reset/${resetToken}`;
+  )}/api/v1/password/reset/${resetToken}`;
 
   const message = `Your password reset token is as follow:\n\n${resetUrl}\n\nIf you have not requested this email, then ignore it.`;
 
@@ -83,6 +84,40 @@ exports.fotgotPassword = catchAsyncErrors(async (req, res, next) => {
     await user.save({ validateBeforeSave: false });
     return next(new ErrrorHandler(error.message, 500));
   }
+});
+
+// Reset Password => /api/v1/password/reset/:token
+exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
+  // Hash URL token
+  const resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  // compare database
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(
+      new ErrrorHandler('Password reset token is invalid or expired', 400)
+    );
+  }
+
+  // check password
+  if (req.body.password !== req.body.confirmPassword) {
+    return next(new ErrrorHandler('Password does not match', 400));
+  }
+  // setup new password
+  user.password = req.body.password;
+
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+  await user.save();
+
+  sendToken(user, 200, res);
 });
 
 // LogOut User => api/v1/logOut
