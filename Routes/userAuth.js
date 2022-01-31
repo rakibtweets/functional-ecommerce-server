@@ -11,6 +11,7 @@ const {
   updatePassword,
   updateProfile,
   allUsers,
+  getUserDetails,
 } = require('../Controllers/userAuthController');
 
 const { isAuthenticatedUser, authorizeRoles } = require('../Middlewares/auth');
@@ -34,6 +35,12 @@ router.get(
   isAuthenticatedUser,
   authorizeRoles('admin'),
   allUsers
+);
+router.get(
+  '/admin/user/:id',
+  isAuthenticatedUser,
+  authorizeRoles('admin'),
+  getUserDetails
 );
 
 module.exports = router;
