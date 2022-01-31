@@ -1,4 +1,5 @@
 const express = require('express');
+const { is } = require('express/lib/request');
 const router = express.Router();
 const {
   registerUser,
@@ -9,9 +10,10 @@ const {
   getUserProfile,
   updatePassword,
   updateProfile,
+  allUsers,
 } = require('../Controllers/userAuthController');
 
-const { isAuthenticatedUser } = require('../Middlewares/auth');
+const { isAuthenticatedUser, authorizeRoles } = require('../Middlewares/auth');
 
 // user Register
 
@@ -24,5 +26,14 @@ router.get('/logOut', logOutUser);
 router.get('/me', isAuthenticatedUser, getUserProfile);
 router.put('/password/update', isAuthenticatedUser, updatePassword);
 router.put('/me/update', isAuthenticatedUser, updateProfile);
+
+//admin routes
+
+router.get(
+  '/admin/users',
+  isAuthenticatedUser,
+  authorizeRoles('admin'),
+  allUsers
+);
 
 module.exports = router;
