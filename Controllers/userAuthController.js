@@ -213,13 +213,31 @@ exports.updateUser = catchAsyncErrors(async (req, res, next) => {
     role: req.body.role,
   };
 
-
   // save update profile to database
   const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
     new: true,
     runValidators: true,
     useFindAndModify: false,
   });
+
+  res.status(200).json({
+    success: true,
+  });
+});
+
+// Delete user  => api/v1/admin/user/:id
+
+exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    return next(
+      new ErrrorHandler(`Users does not found the id: ${req.params.id}`, 404)
+    );
+  }
+
+  // Remove avatar from cloudynary- TODO
+
+  await user.remove();
 
   res.status(200).json({
     success: true,
