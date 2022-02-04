@@ -95,3 +95,46 @@ exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
     message: 'Product is deleted',
   });
 });
+
+//PRODUCT REVIEWS
+
+// Create new reviews => /api/v1/review
+exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
+  const { rating, comment, productId } = req.body;
+  const review = {
+    user: req.user._id,
+    name: req.user.name,
+    rating: Number(rating),
+    comment,
+  };
+
+  const product = await Product.findById(productId);
+  const isReviewed = product.reviews.find(
+    (review) => review.user.toString() === req.user._id.toString()
+  );
+
+  if (isReviewed) {
+    // if reviews exist => update
+    product.reviews.forEach((review) => {
+      if (review.user.toString() === req.user._id.toString()) {
+        review.comment = comment;
+        review.rating = rating;
+      }
+    });
+  } else {
+    // if review doesn't exist => create and push reviews
+    product.reviews.push(review);
+    product.numOfReviews = product.reviews.length;
+  }
+
+  // Product ratings
+  product.ratings =
+    product.reviews.reduce((acc, item) => item.ratings + acc, 0) /
+    product.reviews.length;
+
+  await product.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    success: true,
+  });
+});
