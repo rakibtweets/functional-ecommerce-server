@@ -3,7 +3,6 @@ const Product = require('../Modals/productModals');
 
 const ErrorHandler = require('../Utils/errorHandler');
 const catchAsyncErrors = require('../Middlewares/catchAsyncErrors');
-const { find } = require('../Modals/orderModel');
 
 // Create a new order => /api/v1/order/new
 
@@ -34,6 +33,7 @@ exports.newOrder = catchAsyncErrors(async (req, res, next) => {
     order,
   });
 });
+
 // Get single order   =>   /api/v1/order/:id
 exports.getSingleOrder = catchAsyncErrors(async (req, res, next) => {
   const order = await Order.findById(req.params.id).populate(
@@ -112,3 +112,18 @@ async function updateStock(id, quantity) {
 
   await product.save({ validateBeforeSave: false });
 }
+
+// Delete order   =>   /api/v1/admin/order/:id
+exports.deleteOrder = catchAsyncErrors(async (req, res, next) => {
+  const order = await Order.findById(req.params.id);
+  console.log('~ order', order);
+
+  if (!order) {
+    return next(new ErrorHandler('No Order found with this ID', 404));
+  }
+  await order.remove();
+
+  res.status(200).json({
+    success: true,
+  });
+});
