@@ -20,21 +20,27 @@ exports.newProduct = catchAsyncErrors(async (req, res, next) => {
 // get searched product => /api/v1/products?keyword=apple
 
 exports.getProducts = catchAsyncErrors(async (req, res, next) => {
-  const searchQuery = req.query;
-  const findProduct = Product.find();
+  // const searchQuery = req.query;
+  // const findProduct = Product.find();
 
-  const resPerpage = 4; // product per page
+  const resPerPage = 4; // product per page
   const productCount = await Product.countDocuments();
-  const apiFeatures = new APIFeatures(findProduct, searchQuery)
-    .search()
-    .filter()
-    .pagination(resPerpage);
 
-  const products = await apiFeatures.query;
+  const apiFeatures = new APIFeatures(Product.find(), req.query)
+    .search()
+    .filter();
+  // mongooseerror: query was already executed: use clone() method
+  let products = await apiFeatures.query.clone();
+  const filterProductCount = products.length;
+
+  apiFeatures.pagination(resPerPage);
+  products = await apiFeatures.query;
+
   res.status(200).json({
     success: true,
     productCount,
-    count: products.length,
+    resPerPage,
+    filterProductCount,
     products,
   });
 });
