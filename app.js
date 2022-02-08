@@ -1,8 +1,9 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const cloudinary = require('cloudinary').v2;
 
 const errorMiddleware = require('./Middlewares/error');
 
@@ -10,7 +11,15 @@ const errorMiddleware = require('./Middlewares/error');
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+//Setting up cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // import all the routes
 
