@@ -1,6 +1,7 @@
 const app = require('./app');
 const dotenv = require('dotenv');
 const connectDatabase = require('./Config/mongoDb');
+const cloudinary = require('cloudinary').v2;
 const port = process.env.PORT || 5000;
 
 //setting up config file
@@ -18,6 +19,13 @@ process.on('uncaughtException', (err) => {
 
 // connecting to Database
 connectDatabase();
+
+//Setting up cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const server = app.listen(port, () => {
   console.log(
