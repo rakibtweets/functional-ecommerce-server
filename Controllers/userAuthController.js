@@ -7,7 +7,7 @@ const sendEmail = require('../Utils/sendEmail');
 const crypto = require('crypto');
 const cloudinary = require('cloudinary');
 
-// Register a user => /api/v1/register
+// Register a user url => /api/v1/register
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
   const result = await cloudinary.v2.uploader.upload(req.body.avatar, {
     folder: 'avatars',
@@ -30,7 +30,7 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
   sendToken(user, 200, res);
 });
 
-// Login user => /api/v1/login
+// Login user url => /api/v1/login
 
 exports.loginUser = catchAsyncErrors(async (req, res, next) => {
   const { email, password } = req.body;
@@ -40,7 +40,7 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrrorHandler('Please enter email and password', 400));
   }
 
-  // findind user in database
+  // finding user in database
   const user = await User.findOne({ email }).select('+password');
 
   if (!user) {
@@ -56,7 +56,7 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
   sendToken(user, 200, res);
 });
 
-// Fotgot Password => /api/v1/password/forgot
+// Fotgot Password url=> /api/v1/password/forgot
 exports.fotgotPassword = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
@@ -93,7 +93,7 @@ exports.fotgotPassword = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Reset Password => /api/v1/password/reset/:token
+// Reset Password url => /api/v1/password/reset/:token
 exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
   // Hash URL token
   const resetPasswordToken = crypto
@@ -136,7 +136,7 @@ exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// Update/Change password => /api/v1/password/update
+// Update or Change password => /api/v1/password/update
 exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findById(req.user.id).select('+password');
 
@@ -157,7 +157,7 @@ exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
     email: req.body.email,
   };
 
-  // Update avatar
+  // Update avatar cloudinary
   if (req.body.avatar !== '') {
     const user = await User.findById(req.user.id);
     const image_id = user.avatar.public_id;
@@ -200,7 +200,7 @@ exports.logOutUser = catchAsyncErrors(async (req, res, next) => {
 
 // Admin Routes
 
-// Get all users => /api/v1/admin/users
+// Get all users url => /api/v1/admin/users
 
 exports.allUsers = catchAsyncErrors(async (req, res, next) => {
   const users = await User.find();
@@ -212,7 +212,7 @@ exports.allUsers = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// Get user details => api/v1/admin/user/:id
+// Get user details url => api/v1/admin/user/:id
 
 exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findById(req.params.id);
@@ -248,7 +248,7 @@ exports.updateUser = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// Delete user  => api/v1/admin/user/:id
+// Delete user url  => api/v1/admin/user/:id
 
 exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findById(req.params.id);
