@@ -2,6 +2,12 @@
 
 Functional E-commerce Server is a robust backend solution for building efficient e-commerce platforms. Powered by Node.js, Express, and MongoDB, this project ensures seamless API call and secure user authentication.
 
+  <!-- Languages and Technologies -->
+
+## Languages and Technologies that I have used in the project
+
+![My Skills](https://skillicons.dev/icons?i=js,nodejs,expressjs,mongodb,git,github,bash,heroku,vscode)
+
 ## Features
 
 - **Seamless API Call:** Enable smooth and secure API Call for your online store.
